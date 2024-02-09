@@ -1,5 +1,5 @@
 ---
-title: "HW 2"
+title: "HW 2_Nahomi Farington"
 output: html_document
 date: "2024-02-07"
 ---
