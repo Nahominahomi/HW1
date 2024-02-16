@@ -4,7 +4,7 @@ author: "Nahomi Farington"
 date: "2024-02-13"
 output: html_document
 ---
-
+Group: Amirah, Catherine, Nahomi
 ## PP1
 ```{r}
 how_many_rolls_pp1 <- 2
