@@ -1,0 +1,86 @@
+---
+title: "HW3"
+author: "Nahomi Farington"
+date: "2024-02-13"
+output: html_document
+---
+
+## PP1
+```{r}
+how_many_rolls_pp1 <- 2
+how_many_sims_pp1 <- 1
+
+sim_rolls_mat_pp1 <- matrix(sample(1:6, how_many_rolls_pp1 * how_many_sims_pp1, replace = TRUE), nrow = how_many_rolls_pp1)
+```
+
+```{r}
+if_come_up_5_PP1 <- as.numeric(sim_rolls_mat_pp1 == 5)
+mean(if_come_up_5_PP1)
+
+```
+```{r}
+observed_countspp1 <- table(sim_rolls_mat_pp1 == 5)
+print(observed_countspp1)
+```
+In this protocol, a pair of dice roll determines unfairness if a 5 comes up, leading to a probability of false positives and false negatives, as any instance of a 5 would prompt the conclusion of unfairness.
+
+
+## PP2
+```{r}
+how_many_rolls_pp2 <- 2
+how_many_sims_pp2 <- 20
+
+sim_rolls_mat_pp2 <- matrix(sample(1:6, how_many_rolls_pp2 * how_many_sims_pp2, replace = TRUE), nrow = how_many_rolls_pp2)
+```
+
+```{r}
+if_come_up_5_pp2 <- as.numeric(sim_rolls_mat_pp2 == 5)
+mean(if_come_up_5_pp2)
+
+```
+```{r}
+observed_countspp2 <- table(sim_rolls_mat_pp2 == 5)
+print(observed_countspp2)
+```
+In PP2 the dice was rolled 20 times. Unfairness is conclude if a 5 appears more than half of the time. The calculated mean proportion of 0.075 represents the observed frequency of obtaining a 5.  Exist a moderate risk of both false positives and false negatives. The observed count shows the dice is fair.
+
+
+## PP3
+
+```{r}
+how_many_rolls_pp3 <- 2
+how_many_sims_pp3 <- 100
+
+sim_rolls_mat_pp3 <- matrix(sample(1:6, how_many_rolls_pp3 * how_many_sims_pp3, replace = TRUE), nrow = how_many_rolls_pp3)
+```
+
+```{r}
+if_come_up_5_pp3 <- as.numeric(sim_rolls_mat_pp3 == 5)
+mean(if_come_up_5_pp3)
+
+```
+```{r}
+observed_countspp3 <- table(sim_rolls_mat_pp3 == 5)
+print(observed_countspp3)
+```
+
+100 rolls in the third protocol, the criteria for unfairness remain the same: a 5 should appear more than half of the time. The mean proportion of 0.195 signifies the observed frequency of 5s. There is a less risk of false positives compared to PP2,however still a potential for false negatives. The observed counts shows the dice is fair.
+
+## EP1
+```{r}
+how_many_rolls_EP1 <- 20
+how_many_sims_EP1 <- 1000
+
+sim_rolls_mat_EP1 <- matrix(sample(1:6, how_many_rolls_EP1 * how_many_sims_EP1, replace = TRUE), nrow = how_many_rolls_EP1)
+```
+
+```{r}
+if_come_up_5_EP1 <- as.numeric(sim_rolls_mat_EP1 == 5)
+mean(if_come_up_5_EP1)
+
+```
+```{r}
+observed_countsEP1 <- table(sim_rolls_mat_EP1 == 5)
+print(observed_countsEP1)
+```
+The experimental protocol involves 20 rolls in each of 1000 simulations. The criteria for unfairness is the same considering a 5 more than half of the time. The mean proportion of 0.1668 indicates the average frequency of 5s across all simulations. This protocol mitigates the risk of false positives compared to PP2 and pp3 due to the increased number of simulations. Once again, the observed count shows the dice is fair.
