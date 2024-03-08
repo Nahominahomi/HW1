@@ -1,0 +1,180 @@
+---
+title: "HW__5"
+author: "Nahomi Farington"
+date: "2024-03-07"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(class)
+library(caret)
+```
+
+```{r}
+load("C:/Users/Owner/Desktop/Psychology/R-work/V0500_Lecture1/BRFSS2022/BRFSS2022_rev.RData")
+```
+
+```{r}
+brfss22$Age_midpt <- fct_recode(brfss22$X_AGEG5YR, "21" = "Age 18 to 24",
+                                "27" = "Age 25 to 29", "32" = "Age 30 to 34",
+                                "37" = "Age 35 to 39", "42" = "Age 40 to 44",
+                                "47" = "Age 45 to 49", "52" = "Age 50 to 54",
+                                "57" = "Age 55 to 59", "62" = "Age 60 to 64",
+                                "67" = "Age 65 to 69", "72" = "Age 70 to 74",
+                                "77" = "Age 75 to 79", "82" = "Age 80 or older",
+                                NULL = "Dont know/Refused/Missing")
+brfss22$Age_midpt <- as.numeric(levels(brfss22$Age_midpt))[brfss22$Age_midpt]
+brfss22$Educ_number <- fct_recode(brfss22$EDUCA, 
+                                  "0" = "Never attended school or only kindergarten", 
+                                  "4.5" = "Grades 1 through 8 (Elementary)",
+                                  "10" = "Grades 9 through 11 (Some high school)",
+                                  "12" = "Grade 12 or GED (High school graduate)",
+                    "14" = "College 1 year to 3 years (Some college or technical school)",
+                    "16" = "College 4 years or more (College graduate)",
+                    NULL = "Refused" )
+brfss22$Educ_number <- as.numeric(levels(brfss22$Educ_number))[brfss22$Educ_number]
+
+ACEdidntask <- (as.numeric(is.na(brfss22$ACEDEPRS)) + 
+                        as.numeric(is.na(brfss22$ACEDRINK)) +
+                        as.numeric(is.na(brfss22$ACEDRUGS)) +
+                        as.numeric(is.na(brfss22$ACEPRISN)) +
+                        as.numeric(is.na(brfss22$ACEDIVRC)) +
+                        as.numeric(is.na(brfss22$ACEPUNCH)) +
+                        as.numeric(is.na(brfss22$ACEHURT1)) +
+                        as.numeric(is.na(brfss22$ACESWEAR)) +
+                        as.numeric(is.na(brfss22$ACETOUCH)) )
+select_ACE <- (ACEdidntask == 0) & !is.na(brfss22$MENTHLTH) # with zero missing values for any of ACE questions and not missing MENTLHLTH
+brfss_ACE <- subset(brfss22, select_ACE)
+```
+
+```{r}
+summary(brfss_ACE$MENTHLTH[brfss_ACE$ACEPUNCH == "Adverse Childhood Exper, never: How often did your parents or adults in your home ever slap, hit, kick, punch or beat each other up"])
+```
+
+```{r}
+summary(brfss_ACE$MENTHLTH[brfss_ACE$ACEPUNCH == "once"])
+```
+
+```{r}
+summary(brfss_ACE$MENTHLTH[brfss_ACE$ACEPUNCH == "more than once"])
+```
+
+```{r}
+sd(brfss_ACE$MENTHLTH[brfss_ACE$ACEPUNCH == "Adverse Childhood Exper, never: How often did your parents or adults in your home ever slap, hit, kick, punch or beat each other up"], na.rm = TRUE)
+```
+
+```{r}
+sd(brfss_ACE$MENTHLTH[brfss_ACE$ACEPUNCH == "once"], na.rm = TRUE)
+```
+
+```{r}
+sd(brfss_ACE$MENTHLTH[brfss_ACE$ACEPUNCH == "more than once"], na.rm = TRUE)
+```
+
+```{r}
+summary(brfss_ACE$ACEPUNCH)
+```
+
+```{r}
+library(plyr)
+summary1 <- ddply(brfss_ACE,.(ACEPUNCH), summarize, mean_mentalhealth = mean(MENTHLTH), 
+                  sd_mentalhealth = sd(MENTHLTH), n_obs = sum(!is.na(MENTHLTH)) )
+summary1
+```
+
+```{r}
+summary2 <- ddply(brfss_ACE,.(MENTHLTH >0), summarize, 
+                  zero_ACEPUNCH = sum(ACETOUCH == "Adverse Childhood Exper, never: How often did your parents or adults in your home ever slap, hit, kick, punch or beat each other up"), 
+                  once_ACEPUNCH = sum(ACEPUNCH == "once"), 
+                  mult_ACEPUNCH = sum(ACEPUNCH == "more than once") )
+summary2
+```
+
+```{r}
+brfss_ACE$ACEPUNCH_recode <- fct_recode(brfss_ACE$ACEPUNCH, 
+                                        "0" = "Adverse Childhood Exper, never: How often did your parents or adults in your home ever slap, hit, kick, punch or beat each other up",
+                                "0.5" = "once", 
+                                "1" = "more than once",
+                                NULL = "dont know not sure",
+                                NULL = "refused"
+)
+brfss_ACE$ACESWEAR_recode <- fct_recode(brfss_ACE$ACESWEAR, 
+                                        "0" = "Adverse Childhood Exper, never: How often did a parent or adult in your home ever swear at you, insult you, or put you down",
+                                "0.5" = "once", 
+                                "1" = "more than once",
+                                NULL = "dont know not sure",
+                                NULL = "refused"
+)
+brfss_ACE$ACEPUNCH_recode <- as.numeric(levels(brfss_ACE$ACETOUCH_recode))[brfss_ACE$ACEPUNCH_recode]
+brfss_ACE$ACEHURT_recode <- as.numeric(levels(brfss_ACE$ACESWEAR_recode))[brfss_ACE$ACESWEAR_recode]
+
+brfss_ACE$MENTHLTH_recode <- cut(brfss_ACE$MENTHLTH, breaks = c(-1,0,1,5,10,15,31))
+summary(brfss_ACE$MENTHLTH_recode)
+```
+```{r}
+brfss_ACE$ACEPUNCH_recode <- as.numeric(levels(brfss_ACE$ACEPUNCH_recode))[brfss_ACE$ACEPUNCH_recode]
+
+brfss_ACE$ACESWEAR_recode <- as.numeric(levels(brfss_ACE$ACESWEAR_recode))[brfss_ACE$ACESWEAR_recode]
+
+brfss_ACE$MENTHLTH_recode <- cut(brfss_ACE$MENTHLTH, breaks = c(-1, 0, 1, 5, 10, 15, 31))
+summary(brfss_ACE$MENTHLTH_recode)
+```
+```{r}
+ggplot(data = brfss_ACE, aes(x = MENTHLTH)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of MENTHLTH", x = "MENTHLTH", y = "Frequency")
+
+```
+
+```{r}
+ggplot(data = brfss_ACE, aes(x = ACEPUNCH, y = MENTHLTH)) +
+  geom_boxplot(fill = "skyblue", color = "black") +
+  labs(title = "MENTHLTH by ACEPUNCH", x = "ACEPUNCH", y = "MENTHLTH")
+
+```
+
+
+```{r}
+standardize_varb_to01 <- function(X_in) {
+  (X_in - min(X_in, na.rm = TRUE))/( max(X_in, na.rm = TRUE) - min(X_in, na.rm = TRUE)  )
+}
+```
+
+```{r}
+X1 <- standardize_varb_to01(brfss_ACE$Age_midpt)
+X2 <- standardize_varb_to01(brfss_ACE$Educ_number)
+X3 <- brfss_ACE$ACEPUNCH_recode
+X4 <- brfss_ACE$ACESWEAR_recode
+
+Y <- brfss_ACE$MENTHLTH_recode
+
+nonmissingobs <- complete.cases(Y, X1, X2, X3, X4)
+
+X1 <- subset(X1, nonmissingobs)
+X2 <- subset(X2, nonmissingobs)
+X3 <- subset(X3, nonmissingobs)
+X4 <- subset(X4, nonmissingobs)
+dat_use <- data.frame(X1, X2, X3, X4)
+Y <- subset(Y, nonmissingobs)
+```
+
+```{r}
+dat_use <- data.frame(X1,X2,X3,X4)
+Y <- subset(Y, nonmissingobs)
+```
+
+```{r}
+set.seed(12345)
+NN_obs <- length(Y)
+select1 <- (runif(NN_obs) < 0.6)
+train_data <- subset(dat_use,select1)
+test_data <- subset(dat_use,(!select1))
+cl_data <- Y[select1]
+true_data <- Y[!select1]
+```
+
+
+Looking how bad experiences in childhood, like getting hit or sworn at, might be linked to mental health. Higher standard deviations mean more up-and-down in mental health days. Tried to use k-nn But it seems like there is an issue with the parameter 'k' to 0, which doesn't work because it should be at least 1. (?)
+
