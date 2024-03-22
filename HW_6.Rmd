@@ -1,5 +1,5 @@
 ---
-title: "HW_5"
+title: "HW_6"
 author: "Nahomi Farington"
 date: "2024-03-19"
 output: html_document
