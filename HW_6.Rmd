@@ -81,12 +81,6 @@ stargazer(model_2, type = "??")
 ```
 
 
-
-
-
-
-
-
 Mental Health and State
 
 
@@ -122,8 +116,6 @@ model_6 <- lm(MARIJAN1 ~ SLEPTIM1 + GENHLTH, data = brfss_marijan)
 summary(model_6)
 ```
 Certain types of health insurance coverage are associated with cannabis use. Sleep time and self-reported general health status (Good, Fair, Poor) are also associated with cannabis use.
-
-
 
 
 
