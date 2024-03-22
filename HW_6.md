@@ -127,17 +127,17 @@ Certain types of health insurance coverage are associated with cannabis use. Sle
 
 
 
-# what additional information could you include in the regression, that would help predict cannabis use? 
--mental health: Mental health issues are often correlated with substance use, including cannabis.
--Education: Higher education levels  may influence attitudes, knowledge about substance use effects, and decision-making regarding cannabis use.
+# What additional information could you include in the regression, that would help predict cannabis use? 
+- Mental health: Mental health issues are often correlated with substance use, including cannabis.
+- Education: Higher education levels  may influence attitudes, knowledge about substance use effects, and decision-making regarding cannabis use.
 
 # What subgroups have different relationships?
 Age: Different age groups may have varying relationships with cannabis use, with younger individuals often showing higher rates of use.
 
-# Are there sets of variables that really increase the R-squared (so really help predict)? 
-- age
--health
+# Are there sets of variables that increase the R-squared (so really helps predict)? 
+- Age
+- Health
 
 # Are there other variables that don’t help (even if we think they should)? Think about which results confirm what is known versus which results are surprising
-- State: due to cannabis legalization status across states, the result show a negative relationship.
-- Health insurance:  health insurance type may not have a strong association with cannabis use at the individual, but the results shows some relation which are surprising.
+- State: due to cannabis legalization status across states, the results show a negative relationship.
+- Health insurance:  health insurance type may not have a strong association with cannabis use in the individual, but the results show some surprising relation.
