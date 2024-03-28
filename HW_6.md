@@ -141,3 +141,7 @@ Age: Different age groups may have varying relationships with cannabis use, with
 # Are there other variables that don’t help (even if we think they should)? Think about which results confirm what is known versus which results are surprising
 - State: due to cannabis legalization status across states, the results show a negative relationship.
 - Health insurance:  health insurance type may not have a strong association with cannabis use in the individual, but the results show some surprising relation.
+
+
+Espinosa, Bonner, Alexander (2021)
+To extend the findings researchers could analyze BRFSS data focusing on Hispanic individuals to explore the intersection of ACEs, perceived discrimination, and substance use. Examining a larger and more diverse, researchers can validate and generalize the findings from the current study. This analysis would provide a more comprehensive understanding of how ACEs and discrimination contribute to substance use behaviors among Hispanic individuals at a national level, informing targeted interventions and policies to address these issues effectively.
