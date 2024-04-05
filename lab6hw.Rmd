@@ -1,22 +1,22 @@
 ---
-title: "HW_5"
+title: "Farington_HW7lab6"
 author: "Nahomi Farington"
-date: "2024-03-19"
+date: "2024-04-03"
 output: html_document
 ---
-
 ```{r}
 load("C:/Users/Owner/Desktop/Psychology/R-work/V0500_Lecture1/BRFSS2022/.RData")
 ```
 
 ```{r}
 library(ggplot2)
-library(tidyverse)
 library(stargazer)
+library(tidyverse)
 ```
 
 
 ```{r}
+
 brfss22$Age_midpt <- fct_recode(brfss22$X_AGEG5YR, "21" = "Age 18 to 24",
                                       "27" = "Age 25 to 29", "32" = "Age 30 to 34",
                                       "37" = "Age 35 to 39", "42" = "Age 40 to 44",
@@ -52,7 +52,8 @@ brfss22$Educ_number <- fct_recode(brfss22$EDUCA,
                                   NULL = "Refused" )
 brfss22$Educ_number <- as.numeric(levels(brfss22$Educ_number))[brfss22$Educ_number]
 
-levelsmarijaneace <- "dont know not sure"
+
+brfss_marijan <- "dont know not sure"
 
 select1 <- !is.na(brfss22$MARIJAN1)
 brfss_marijan <- subset(brfss22, select1 )
@@ -69,75 +70,80 @@ model_1 <- lm(MARIJAN1 ~ Age_midpt, data = brfss_marijan)
 summary(model_1)
 ```
 
-
 ```{r}
 model_2 <- lm(MARIJAN1 ~ Age_midpt + X_PRACE2 + X_HISPANC + EDUCA, data = brfss_marijan)
 summary(model_2)
-
-# maybe get fancy
 require(stargazer)
-
 stargazer(model_2, type = "??")
 ```
 
-
-
-
-
-
-
-
-Mental Health and State
-
+#lab 6
 
 ```{r}
-model_3 <- lm(MARIJAN1 ~ ADDEPEV3, data = brfss_marijan)
+model_2 <- lm(MARIJAN1 ~ Age_midpt + MARITAL + MSCODE + EDUCA , data = brfss_marijan)
+summary(model_2)
+
+model_3 <- lm(MARIJAN1 ~ Age_midpt + I(Age_midpt^2) + MARITAL + MSCODE + EDUCA, data = brfss_marijan)
 summary(model_3)
 ```
 
-
 ```{r}
-model_3.1 <- lm(MARIJAN1 ~ SDHSTRE1, data = brfss_marijan)
-summary(model_3.1)
+to_be_predicted_2 <- data.frame(Age_midpt = 25:55, MARITAL = "Married",
+                          MSCODE = "in central city", EDUCA = "College 4 years or more (College graduate)")
+
+to_be_predicted_2$yhat <- predict(model_2, newdata = to_be_predicted_2)
+
+summary(to_be_predicted_2$yhat)
 ```
 
-
 ```{r}
-model_4 <- lm(MARIJAN1 ~ Age_midpt + ADDEPEV3 + SDHSTRE1 + X_STATE, data = brfss_marijan)
+summary
+model_4 <- lm(MARIJAN1 ~ Age_midpt*(MARITAL + EDUCA) + I(Age_midpt^2)*(MARITAL + EDUCA) + MARITAL + MSCODE + EDUCA, data = brfss_marijan)
 summary(model_4)
 ```
-The findings suggest that besides age, factors such as mental health, and state of residence also play a role in predicting cannabis use patterns. In this case, most states and stress levels show a negative or lower significance in cannabis use.
+```{r}
+anova(model_2, model_3, model_4)
+```
 
-
-
-- Health 
 
 ```{r}
-model_5 <- lm(MARIJAN1 ~ PRIMINSR, data = brfss_marijan)
+to_be_predicted_2$yhat3 <- predict(model_3, newdata = to_be_predicted_2)
+to_be_predicted_2$yhat4 <- predict(model_4, newdata = to_be_predicted_2)
+
+
+d_for_graphing <- data.frame(Age_midpt = 25:55, 
+                             to_be_predicted_2$yhat,
+                             to_be_predicted_2$yhat3,
+                             to_be_predicted_2$yhat4)
+
+p_predvals <- ggplot(d_for_graphing, aes(Age_midpt))
+p_predvals + geom_line(aes(y = to_be_predicted_2.yhat)) + 
+  geom_line(aes(y = to_be_predicted_2.yhat3), color = 'blue') +
+  geom_line(aes(y = to_be_predicted_2.yhat4), color = 'red')
+```
+
+```{r}
+quantile(brfss_marijan$MARIJAN1, probs = c(0.99,0.95,0.94,0.93,0.92,0.91,0.9))
+
+brfss_marijan$MARIJAN_factor <- as.factor(brfss_marijan$MARIJAN1)
+summary(brfss_marijan$MARIJAN_factor)
+```
+
+```{r}
+brfss_marijan$Marijan_01 <- as.numeric(brfss_marijan$MARIJAN1 > 0)
+
+model_5 <- lm(Marijan_01 ~ Age_midpt*(MARITAL + EDUCA) + I(Age_midpt^2)*(MARITAL + EDUCA) + MARITAL + MSCODE + EDUCA, data = brfss_marijan)
 summary(model_5)
 ```
 
 ```{r}
-model_6 <- lm(MARIJAN1 ~ SLEPTIM1 + GENHLTH, data = brfss_marijan)
-summary(model_6)
+anova(model_4,model_5)
 ```
-Certain types of health insurance coverage are associated with cannabis use. Sleep time and self-reported general health status (Good, Fair, Poor) are also associated with cannabis use.
 
+1-Markowitz, A. J. (2017). Associations Between School Connection and Depressive Symptoms From Adolescence Through Early Adulthood: Moderation by Early Adversity. Journal of Research on Adolescence (Wiley-Blackwell), 27(2), 298–311. https://doi-org.ccny-proxy1.libr.ccny.cuny.edu/10.1111/jora.12275
 
+The first paper discusses the relationship between school connection and depressive symptoms in youth, particularly those at higher risk for depressive symptoms. The study uses data from the National Longitudinal Study of Adolescent Health and evaluates statistics such as regression coefficients, standard errors, and p-values to analyze associations between school connection, adversity, and depressive symptoms across genders in adolescence.
 
+2-Gunnarsdóttir, H., Hensing, G., & Hammarström, A. (2021). Poor school connectedness in adolescence and adulthood depressiveness: a longitudinal theory-driven study from the Northern Sweden Cohort. European Journal of Public Health, 31(4), 797–802. https://doi-org.ccny-proxy1.libr.ccny.cuny.edu/10.1093/eurpub/ckab027
 
-
-# what additional information could you include in the regression, that would help predict cannabis use? 
--mental health: Mental health issues are often correlated with substance use, including cannabis.
--Education: Higher education levels  may influence attitudes, knowledge about substance use effects, and decision-making regarding cannabis use.
-
-# What subgroups have different relationships?
-Age: Different age groups may have varying relationships with cannabis use, with younger individuals often showing higher rates of use.
-
-# Are there sets of variables that really increase the R-squared (so really help predict)? 
-- age
--health
-
-# Are there other variables that don’t help (even if we think they should)? Think about which results confirm what is known versus which results are surprising
-- State: due to cannabis legalization status across states, the result show a negative relationship.
-- Health insurance:  health insurance type may not have a strong association with cannabis use at the individual, but the results shows some relation which are surprising.
+The paper explores the link between adolescents' school connectedness, family climate, and depressiveness in adulthood using Bronfenbrenner’s ecological theory. It emphasizes the importance of early life experiences in shaping mental health outcomes. The study utilizes data from the Northern Swedish Cohort, involving 481 women and 526 men born in 1965, with data collected at ages 16, 21, 30, and 43. Statistical methods such as generalized linear models with random intercepts were employed to analyze the associations.
